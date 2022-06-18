@@ -9,7 +9,6 @@ sudo systemctl enable nginx
 sudo apt install -y ufw
 sudo ufw allow 22
 sudo ufw allow 80
-sudo ufw allow 443
 sudo ufw --force enable
 sudo apt install -y apt-transport-https software-properties-common
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
@@ -29,10 +28,10 @@ sudo apt install -y nginx-extras
 sudo apt install -y certbot python3-certbot-nginx
 sudo rm /etc/nginx/sites-available/default
 sudo echo "server {" >> /etc/nginx/sites-available/default
-sudo echo "    listen 80 ssl http2;" >> /etc/nginx/sites-available/default
-sudo echo "    listen [::]:80 ssl http2;" >> /etc/nginx/sites-available/default
+sudo echo "    listen 80;" >> /etc/nginx/sites-available/default
+sudo echo "    listen [::]:80;" >> /etc/nginx/sites-available/default
 sudo echo "    server_tokens off;" >> /etc/nginx/sites-available/default
-sudo echo "    more_set_headers 'Server: linuxVirusGame/nginx';" >> /etc/nginx/sites-available/default
+sudo echo "    more_set_headers 'Server: virusGame/nginx';" >> /etc/nginx/sites-available/default
 sudo echo "    more_clear_headers 'X-Powered-By';" >> /etc/nginx/sites-available/default
 sudo echo "    root /var/www/virus-game;" >> /etc/nginx/sites-available/default
 sudo echo "    index index.html index.htm index.php index.jpg index.jpeg index.gif index.json index.txt;" >> /etc/nginx/sites-available/default
@@ -65,8 +64,8 @@ sudo echo '    include /etc/nginx/mime.types;' >> /etc/nginx/nginx.conf
 sudo echo '    default_type application/octet-stream;' >> /etc/nginx/nginx.conf
 sudo echo '    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;' >> /etc/nginx/nginx.conf
 sudo echo '    ssl_prefer_server_ciphers on;' >> /etc/nginx/nginx.conf
-sudo echo '    access_log /var/log/nginx/access.log;' >> /etc/nginx/nginx.conf
-sudo echo '    error_log /var/log/nginx/error.log;' >> /etc/nginx/nginx.conf
+sudo echo '    access_log /dev/null;' >> /etc/nginx/nginx.conf
+sudo echo '    error_log /dev/null;' >> /etc/nginx/nginx.conf
 sudo echo '    gzip on;' >> /etc/nginx/nginx.conf
 sudo echo '    include /etc/nginx/conf.d/*.conf;' >> /etc/nginx/nginx.conf
 sudo echo '    include /etc/nginx/sites-enabled/*;' >> /etc/nginx/nginx.conf
