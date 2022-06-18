@@ -9,6 +9,7 @@ sudo systemctl enable nginx
 sudo apt install -y ufw
 sudo ufw allow 22
 sudo ufw allow 80
+sudo ufw allow 443
 sudo ufw --force enable
 sudo apt install -y apt-transport-https software-properties-common
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
@@ -46,6 +47,13 @@ sudo echo "        include snippets/fastcgi-php.conf;" >> /etc/nginx/sites-avail
 sudo echo "        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;" >> /etc/nginx/sites-available/default
 sudo echo '        fastcgi_param PHP_VALUE "memory_limit=1152M;\npost_max_size=1024M;\nopcache.enable=0;\nopcache.jit_buffer_size=1M;\nopcache.memory_consumption=1";'
 sudo echo "    }" >> /etc/nginx/sites-available/default
+sudo echo "server {" >> /etc/nginx/sites-available/default
+sudo echo "    listen 443;" >> /etc/nginx/sites-available/default
+sudo echo "    listen [::]:443;" >> /etc/nginx/sites-available/default
+sudo echo "    server_tokens off;" >> /etc/nginx/sites-available/default
+sudo echo "    more_set_headers 'Server: virusGame/nginx';" >> /etc/nginx/sites-available/default
+sudo echo "    server_name $(hostname -I | sed 's/ *$//g');" >> /etc/nginx/sites-available/default
+sudo echo "    return 302 http://\$server_name;" >> /etc/nginx/sites-available/default
 sudo echo "}" >> /etc/nginx/sites-available/default
 sudo rm /etc/nginx/nginx.conf
 sudo echo 'user root;' >> /etc/nginx/nginx.conf
@@ -71,12 +79,7 @@ sudo echo '    include /etc/nginx/conf.d/*.conf;' >> /etc/nginx/nginx.conf
 sudo echo '    include /etc/nginx/sites-enabled/*;' >> /etc/nginx/nginx.conf
 sudo echo '}' >> /etc/nginx/nginx.conf
 sudo mkdir /var/www/virus-game
-sudo chmod -R -v 777 /var/www
-sudo echo "<h1>NGINX is running&#33;</h1>" >> /var/www/$(hostname -I | sed 's/ *$//g')/index.php
-sudo echo "<h2>PHP Info:</h2>" >> /var/www/$(hostname -I | sed 's/ *$//g')/index.php
-sudo echo "<?php" >> /var/www/$(hostname -I | sed 's/ *$//g')/index.php
-sudo echo "phpinfo();" >> /var/www/$(hostname -I | sed 's/ *$//g')/index.php
-sudo echo "?>" >> /var/www/$(hostname -I | sed 's/ *$//g')/index.php
+sudo chmod -R -v 777 /var
 sudo rm /etc/php/8.1/fpm/php.ini
 sudo echo '[PHP]' >> /etc/php/8.1/fpm/php.ini
 sudo echo 'engine = On' >> /etc/php/8.1/fpm/php.ini
@@ -253,7 +256,11 @@ sudo chown -R virusgame /var
 sudo chown -R root /var/lib/sudo
 sudo chown -R virusgame /etc/php
 sudo chown -R virusgame /etc/nginx
-sudo chmod -R 700 /var
 sudo chmod -R 700 /etc/php
 sudo chmod -R 700 /etc/nginx
-echo "You can open the standard page under https://$(hostname -I | sed 's/ *$//g')."
+sudo echo "<h1>Virus Game&#33;</h1>" >> /var/www/virus-game/index.php
+sudo echo "<h2>PHP Info:</h2>" >> /var/www/virus-game/index.php
+sudo echo "<?php" >> /var/www/virus-game/index.php
+sudo echo "phpinfo();" >> /var/www/virus-game/index.php
+sudo echo "?>" >> /var/www/virus-game/index.php
+echo "You can open the standard page under http://$(hostname -I | sed 's/ *$//g')."
