@@ -47,6 +47,9 @@ sudo echo "        include snippets/fastcgi-php.conf;" >> /etc/nginx/sites-avail
 sudo echo "        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;" >> /etc/nginx/sites-available/default
 sudo echo '        fastcgi_param PHP_VALUE "memory_limit=1152M;\npost_max_size=1024M;\nopcache.enable=0;\nopcache.jit_buffer_size=1M;\nopcache.memory_consumption=1";'
 sudo echo "    }" >> /etc/nginx/sites-available/default
+sudo echo "    location ~ .vgame$ {" >> /etc/nginx/sites-available/default
+sudo echo "        deny all;" >> /etc/nginx/sites-available/default
+sudo echo "    }" >> /etc/nginx/sites-available/default
 sudo echo "}" >> /etc/nginx/sites-available/default
 sudo echo "server {" >> /etc/nginx/sites-available/default
 sudo echo "    listen 443;" >> /etc/nginx/sites-available/default
