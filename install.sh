@@ -30,7 +30,7 @@ sudo apt install -y certbot python3-certbot-nginx
 sudo rm /etc/nginx/sites-available/default
 sudo echo "server {" >> /etc/nginx/sites-available/default
 sudo echo "    listen 80;" >> /etc/nginx/sites-available/default
-sudo echo "    listen [::]:80;" >> /etc/nginx/sites-available/default
+sudo echo "    listen [::]:80 ipv6only=on;" >> /etc/nginx/sites-available/default
 sudo echo "    server_tokens off;" >> /etc/nginx/sites-available/default
 sudo echo "    more_set_headers 'Server: virusGame/nginx';" >> /etc/nginx/sites-available/default
 sudo echo "    more_clear_headers 'X-Powered-By';" >> /etc/nginx/sites-available/default
