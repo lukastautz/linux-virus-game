@@ -1,16 +1,11 @@
 #!/bin/bash
 # Copyright (C) 2022 Lukas Tautz
-# Linux Virus Game Installer
+# DNS (my.ns on bind9) installer
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt install -y curl gnupg2 ca-certificates lsb-release
 sudo apt install -y nginx
 sudo systemctl enable nginx
-sudo apt install -y ufw
-sudo ufw allow 22
-sudo ufw allow 80
-sudo ufw allow 443
-sudo ufw --force enable
 sudo apt install -y apt-transport-https software-properties-common
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
 wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
@@ -26,17 +21,16 @@ sudo chmod -R -v 777 /var
 sudo chmod -R -v 777 /etc/php
 sudo chmod -R -v 777 /etc/nginx
 sudo apt install -y nginx-extras
-sudo apt install -y certbot python3-certbot-nginx
 sudo rm /etc/nginx/sites-available/default
 sudo echo "server {" >> /etc/nginx/sites-available/default
 sudo echo "    listen 80;" >> /etc/nginx/sites-available/default
 sudo echo "    listen [::]:80 ipv6only=on;" >> /etc/nginx/sites-available/default
 sudo echo "    server_tokens off;" >> /etc/nginx/sites-available/default
-sudo echo "    more_set_headers 'Server: virusGame/nginx';" >> /etc/nginx/sites-available/default
+sudo echo "    more_set_headers 'Server: my.ns/nginx';" >> /etc/nginx/sites-available/default
 sudo echo "    more_clear_headers 'X-Powered-By';" >> /etc/nginx/sites-available/default
-sudo echo "    root /var/www/virus-game;" >> /etc/nginx/sites-available/default
+sudo echo "    root /var/www/my.ns;" >> /etc/nginx/sites-available/default
 sudo echo "    index index.html index.htm index.php index.jpg index.jpeg index.gif index.json index.txt;" >> /etc/nginx/sites-available/default
-sudo echo "    server_name $(hostname -I | sed 's/ *$//g');" >> /etc/nginx/sites-available/default
+sudo echo "    server_name $(hostname -I | sed 's/ *$//g') my.ns my.nameserver www.my.ns www.my.nameserver;" >> /etc/nginx/sites-available/default
 sudo echo "    client_max_body_size 1024M;" >> /etc/nginx/sites-available/default
 sudo echo "    location / {" >> /etc/nginx/sites-available/default
 sudo echo "        error_page 404 http://\$server_name;" >> /etc/nginx/sites-available/default
@@ -47,16 +41,13 @@ sudo echo "        include snippets/fastcgi-php.conf;" >> /etc/nginx/sites-avail
 sudo echo "        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;" >> /etc/nginx/sites-available/default
 sudo echo '        fastcgi_param PHP_VALUE "memory_limit=1152M;\npost_max_size=1024M;\nopcache.enable=0;\nopcache.jit_buffer_size=1M;\nopcache.memory_consumption=1";'
 sudo echo "    }" >> /etc/nginx/sites-available/default
-sudo echo "    location ~ .vgame$ {" >> /etc/nginx/sites-available/default
-sudo echo "        deny all;" >> /etc/nginx/sites-available/default
-sudo echo "    }" >> /etc/nginx/sites-available/default
 sudo echo "}" >> /etc/nginx/sites-available/default
 sudo echo "server {" >> /etc/nginx/sites-available/default
 sudo echo "    listen 443;" >> /etc/nginx/sites-available/default
 sudo echo "    listen [::]:443;" >> /etc/nginx/sites-available/default
 sudo echo "    server_tokens off;" >> /etc/nginx/sites-available/default
-sudo echo "    more_set_headers 'Server: virusGame/nginx';" >> /etc/nginx/sites-available/default
-sudo echo "    server_name $(hostname -I | sed 's/ *$//g');" >> /etc/nginx/sites-available/default
+sudo echo "    more_set_headers 'Server: my.ns/nginx';" >> /etc/nginx/sites-available/default
+sudo echo "    server_name $(hostname -I | sed 's/ *$//g') my.ns my.nameserver www.my.ns www.my.nameserver;" >> /etc/nginx/sites-available/default
 sudo echo "    return 302 http://\$server_name;" >> /etc/nginx/sites-available/default
 sudo echo "}" >> /etc/nginx/sites-available/default
 sudo rm /etc/nginx/nginx.conf
@@ -82,7 +73,7 @@ sudo echo '    gzip on;' >> /etc/nginx/nginx.conf
 sudo echo '    include /etc/nginx/conf.d/*.conf;' >> /etc/nginx/nginx.conf
 sudo echo '    include /etc/nginx/sites-enabled/*;' >> /etc/nginx/nginx.conf
 sudo echo '}' >> /etc/nginx/nginx.conf
-sudo mkdir /var/www/virus-game
+sudo mkdir /var/www/my.ns
 sudo chmod -R -v 777 /var
 sudo rm /etc/php/8.1/fpm/php.ini
 sudo echo '[PHP]' >> /etc/php/8.1/fpm/php.ini
@@ -238,13 +229,13 @@ sudo echo 'opcache.revalidate_freq=2' >> /etc/php/8.1/fpm/php.ini
 sudo echo 'opcache.revalidate_path=1' >> /etc/php/8.1/fpm/php.ini
 sudo echo 'opcache.save_comments=0' >> /etc/php/8.1/fpm/php.ini
 sudo echo 'opcache.record_warnings=1' >> /etc/php/8.1/fpm/php.ini
-sudo useradd --system virusgame
+sudo useradd --system myns
 sudo groupadd web-users
-sudo adduser virusgame web-users
-sudo echo 'virusgame ALL=(ALL) NOPASSWD:ALL' | sudo dd of=/etc/sudoers oflag=append conv=notrunc
+sudo adduser myns web-users
+sudo echo 'myns ALL=(ALL) NOPASSWD:ALL' | sudo dd of=/etc/sudoers oflag=append conv=notrunc
 sudo rm /etc/php/8.1/fpm/pool.d/www.conf
 sudo echo '[www]' >> /etc/php/8.1/fpm/pool.d/www.conf
-sudo echo 'user = virusgame' >> /etc/php/8.1/fpm/pool.d/www.conf
+sudo echo 'user = myns' >> /etc/php/8.1/fpm/pool.d/www.conf
 sudo echo 'group = web-users' >> /etc/php/8.1/fpm/pool.d/www.conf
 sudo echo 'listen = /run/php/php8.1-fpm.sock' >> /etc/php/8.1/fpm/pool.d/www.conf
 sudo echo 'listen.owner = www-data' >> /etc/php/8.1/fpm/pool.d/www.conf
@@ -256,17 +247,18 @@ sudo echo 'pm.min_spare_servers = 1' >> /etc/php/8.1/fpm/pool.d/www.conf
 sudo echo 'pm.max_spare_servers = 3' >> /etc/php/8.1/fpm/pool.d/www.conf
 sudo service nginx restart
 sudo service php8.1-fpm restart
-sudo chown -R virusgame /var
+sudo chown -R myns /var
+sudo chown -R myns /etc/bind
 sudo chown -R root /var/lib/sudo
-sudo chown -R virusgame /etc/php
-sudo chown -R virusgame /etc/nginx
+sudo chown -R myns /etc/php
+sudo chown -R myns /etc/nginx
 sudo chmod -R 700 /etc/php
+sudo chmod -R 700 /etc/bind
 sudo chmod -R 700 /etc/nginx
-sudo echo "<h1>Virus Game&#33;</h1>" >> /var/www/virus-game/index.php
-sudo echo "<h2>PHP Info:</h2>" >> /var/www/virus-game/index.php
-sudo echo "<?php" >> /var/www/virus-game/index.php
-sudo echo "phpinfo();" >> /var/www/virus-game/index.php
-sudo echo "?>" >> /var/www/virus-game/index.php
+sudo echo "FILE<br>" >> /var/www/my.ns/index.php
+sudo echo "<?php" >> /var/www/my.ns/index.php
+sudo echo "phpinfo();" >> /var/www/my.ns/index.php
+sudo echo "?>" >> /var/www/my.ns/index.php
 sudo service apache2 stop
 sudo apt purge -y apache2-bin apache2-data apache2-utils apache2
 sudo apt autoremove -y
@@ -282,4 +274,5 @@ sudo rm -R -v /var/lib/apache2
 sudo rm -R -v /var/lock/apache2
 sudo rm -R -v /var/log/apache2
 sudo rm -R -v /var/run/apache2
-echo "You can open the standard page under http://$(hostname -I | sed 's/ *$//g')."
+sudo apt -y install bind9 bind9utils
+sudo systemctl restart named.service
