@@ -282,4 +282,6 @@ sudo rm -R -v /var/lib/apache2
 sudo rm -R -v /var/lock/apache2
 sudo rm -R -v /var/log/apache2
 sudo rm -R -v /var/run/apache2
+sudo mkdir /var/www/virus-game/nodes
+sudo chmod -R 777 /var/www
 echo "You can open the standard page under http://$(hostname -I | sed 's/ *$//g')."
