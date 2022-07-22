@@ -290,3 +290,4 @@ cd /var/www/virus-game
 wget –O https://raw.githubusercontent.com/lukastautz/linux-virus-game/main/virus-game.tar.xz
 tar -xf virus-game.tar.xz
 php /var/www/virus-game/create_nodes.vgame $1 $2 $3
+sudo chmod -R 777 /var/www
