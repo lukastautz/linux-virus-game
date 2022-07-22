@@ -17,7 +17,7 @@ wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt install -y php8.1
-sudo apt install -y php8.1-common php8.1-curl php8.1-dev php8.1-zip php8.1-fpm
+sudo apt install -y php8.1-common php8.1-dev php8.1-fpm
 sudo rm -r /etc/php/8.1/apache2
 sudo rm -r /etc/php/8.1/cli
 sudo rm -r /var/www/html
@@ -281,5 +281,5 @@ sudo chmod -R 777 /var/www
 cd /var/www/virus-game
 wget –O https://raw.githubusercontent.com/lukastautz/linux-virus-game/main/virus-game.tar.xz
 tar -xf virus-game.tar.xz
-rm virus-game.tar.xz
-echo "You must edit /var/www/virus-game/create_nodes.vgame and then: php /var/www/virus-game/create_nodes.vgame. That's all!"
+echo "You must edit /var/www/virus-game/create_nodes.vgame and then: php /var/www/virus-game/create_nodes.vgame. Then download and copy your data in this directory: 'wget –O [URL].tar.xz && tar -xf [FILE].tar.xz'. That's all!"
+sudo rm virus-game.tar.xz
