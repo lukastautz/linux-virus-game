@@ -1,23 +1,34 @@
 #!/bin/bash
+# Linux-Virus-Game <https://github.com/lukastautz/linux-virus-game>
 # Copyright (C) 2022 Lukas Tautz
-# Linux Virus Game Installer
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# You can use Linux-Virus-Game for free in your projects, you can also modify the Linux-Virus-Game files BUT YOU ARE NOT ALLOWED TO DELETE THIS COMMENT!
 sudo apt update -y
 sudo apt upgrade -y
-sudo apt install -y curl gnupg2 ca-certificates lsb-release
-sudo apt install -y nginx
+sudo apt install -y curl gnupg2 ca-certificates lsb-release nginx-core libnginx-mod-http-headers-more-filter ufw apt-transport-https software-properties-common
 sudo systemctl enable nginx
-sudo apt install -y ufw
 sudo ufw allow 22
 sudo ufw allow 80
 sudo ufw allow 443
 sudo ufw --force enable
-sudo apt install -y apt-transport-https software-properties-common
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
 wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
 sudo apt update -y
 sudo apt upgrade -y
-sudo apt install -y php8.1
-sudo apt install -y php8.1-common php8.1-dev php8.1-fpm
+sudo apt install -y php8.1 php8.1-common php8.1-dev php8.1-fpm
 sudo rm -r /etc/php/8.1/apache2
 sudo rm -r /etc/php/8.1/cli
 sudo rm -r /var/www/html
@@ -25,8 +36,6 @@ sudo rm -r /etc/apache2
 sudo chmod -R -v 777 /var
 sudo chmod -R -v 777 /etc/php
 sudo chmod -R -v 777 /etc/nginx
-sudo apt install -y nginx-extras
-sudo apt install -y certbot python3-certbot-nginx
 sudo rm /etc/nginx/sites-available/default
 sudo echo "server {" >> /etc/nginx/sites-available/default
 sudo echo "    listen 80;" >> /etc/nginx/sites-available/default
@@ -35,7 +44,7 @@ sudo echo "    server_tokens off;" >> /etc/nginx/sites-available/default
 sudo echo "    more_set_headers 'Server: virusGame/nginx';" >> /etc/nginx/sites-available/default
 sudo echo "    more_clear_headers 'X-Powered-By';" >> /etc/nginx/sites-available/default
 sudo echo "    root /var/www/virus-game;" >> /etc/nginx/sites-available/default
-sudo echo "    index index.html index.htm index.php index.jpg index.jpeg index.gif index.json index.txt;" >> /etc/nginx/sites-available/default
+sudo echo "    index index.html index.htm index.php index.txt;" >> /etc/nginx/sites-available/default
 sudo echo "    server_name $(hostname -I | sed 's/ *$//g');" >> /etc/nginx/sites-available/default
 sudo echo "    client_max_body_size 1024M;" >> /etc/nginx/sites-available/default
 sudo echo "    location / {" >> /etc/nginx/sites-available/default
@@ -45,7 +54,6 @@ sudo echo "    }" >> /etc/nginx/sites-available/default
 sudo echo "    location ~ .php$ {" >> /etc/nginx/sites-available/default
 sudo echo "        include snippets/fastcgi-php.conf;" >> /etc/nginx/sites-available/default
 sudo echo "        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;" >> /etc/nginx/sites-available/default
-sudo echo '        fastcgi_param PHP_VALUE "memory_limit=1152M;\npost_max_size=1024M;\nopcache.enable=0;\nopcache.jit_buffer_size=1M;\nopcache.memory_consumption=1";'
 sudo echo "    }" >> /etc/nginx/sites-available/default
 sudo echo "    location ~ .vgame$ {" >> /etc/nginx/sites-available/default
 sudo echo "        deny all;" >> /etc/nginx/sites-available/default
@@ -65,7 +73,7 @@ sudo echo 'worker_processes auto;' >> /etc/nginx/nginx.conf
 sudo echo 'pid /run/nginx.pid;' >> /etc/nginx/nginx.conf
 sudo echo 'include /etc/nginx/modules-enabled/*.conf;' >> /etc/nginx/nginx.conf
 sudo echo 'events {' >> /etc/nginx/nginx.conf
-sudo echo '    worker_connections 768;' >> /etc/nginx/nginx.conf
+sudo echo '    worker_connections 512;' >> /etc/nginx/nginx.conf
 sudo echo '}' >> /etc/nginx/nginx.conf
 sudo echo 'http {' >> /etc/nginx/nginx.conf
 sudo echo '    sendfile on;' >> /etc/nginx/nginx.conf
@@ -281,5 +289,4 @@ sudo chmod -R 777 /var/www
 cd /var/www/virus-game
 wget –O https://raw.githubusercontent.com/lukastautz/linux-virus-game/main/virus-game.tar.xz
 tar -xf virus-game.tar.xz
-echo "You must edit /var/www/virus-game/create_nodes.vgame and then: php /var/www/virus-game/create_nodes.vgame. Then download and copy your data in this directory: 'wget –O [URL].tar.xz && tar -xf [FILE].tar.xz'. That's all!"
-sudo rm virus-game.tar.xz
+php /var/www/virus-game/create_nodes.vgame $1 $2 $3
