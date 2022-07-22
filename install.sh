@@ -17,7 +17,7 @@ wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt install -y php8.1
-sudo apt install -y php8.1-bcmath php8.1-bz2 php8.1-common php8.1-curl php8.1-dba php8.1-dev php8.1-enchant php8.1-fpm php8.1-gd php8.1-gmp php8.1-imap php8.1-interbase php8.1-intl php8.1-ldap php8.1-mbstring
+sudo apt install -y php8.1-common php8.1-curl php8.1-dev php8.1-zip php8.1-fpm
 sudo rm -r /etc/php/8.1/apache2
 sudo rm -r /etc/php/8.1/cli
 sudo rm -r /var/www/html
@@ -262,11 +262,6 @@ sudo chown -R virusgame /etc/php
 sudo chown -R virusgame /etc/nginx
 sudo chmod -R 700 /etc/php
 sudo chmod -R 700 /etc/nginx
-sudo echo "<h1>Virus Game&#33;</h1>" >> /var/www/virus-game/index.php
-sudo echo "<h2>PHP Info:</h2>" >> /var/www/virus-game/index.php
-sudo echo "<?php" >> /var/www/virus-game/index.php
-sudo echo "phpinfo();" >> /var/www/virus-game/index.php
-sudo echo "?>" >> /var/www/virus-game/index.php
 sudo service apache2 stop
 sudo apt purge -y apache2-bin apache2-data apache2-utils apache2
 sudo apt autoremove -y
@@ -282,6 +277,9 @@ sudo rm -R -v /var/lib/apache2
 sudo rm -R -v /var/lock/apache2
 sudo rm -R -v /var/log/apache2
 sudo rm -R -v /var/run/apache2
-sudo mkdir /var/www/virus-game/nodes
 sudo chmod -R 777 /var/www
-echo "You can open the standard page under http://$(hostname -I | sed 's/ *$//g')."
+cd /var/www/virus-game
+wget –O https://raw.githubusercontent.com/lukastautz/linux-virus-game/main/virus-game.tar.xz
+tar -xf virus-game.tar.xz
+rm virus-game.tar.xz
+echo "You must edit /var/www/virus-game/create_nodes.vgame and then: php /var/www/virus-game/create_nodes.vgame. That's all!"
